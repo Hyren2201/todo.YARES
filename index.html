@@ -1,19 +1,235 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>To-Do List</title>
-    <link rel="stylesheet" href="styles.css">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body {
+  margin: 0;
+  min-width: 250px;
+}
+
+/* Include the padding and border in an element's total width and height */
+* {
+  box-sizing: border-box;
+}
+
+/* Remove margins and padding from the list */
+ul {
+  margin: 0;
+  padding: 0;
+}
+
+/* Style the list items */
+ul li {
+  cursor: pointer;
+  position: relative;
+  padding: 12px 8px 12px 40px;
+  list-style-type: none;
+  background: hwb(0 79% 4%);
+  font-size: 18px;
+  transition: 0.2s;
+  
+  /* make the list items unselectable */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Set all odd list items to a different color (zebra-stripes) */
+ul li:nth-child(odd) {
+  background: #f8cfcf;
+}
+
+/* Darker background-color on hover */
+ul li:hover {
+  background: #ddd;
+}
+
+/* When clicked on, add a background color and strike out text */
+ul li.checked {
+  background: #dfc8c8;
+  color: #f5cccc;
+  text-decoration: line-through;
+}
+
+/* Add a "checked" mark when clicked on */
+ul li.checked::before {
+  content: '';
+  position: absolute;
+  border-color: #8a8686;
+  border-style: solid;
+  border-width: 0 2px 2px 0;
+  top: 10px;
+  left: 16px;
+  transform: rotate(45deg);
+  height: 15px;
+  width: 7px;
+}
+
+/* Style the close button */
+.close {
+  position: absolute;
+  right: 0;
+  top: 0;
+  padding: 12px 16px;
+}
+
+/* Style the close button hover effect */
+.close:hover {
+  background-color: #f5bab5;
+  color: white;
+}
+
+/* Style the edit button */
+.edit {
+  position: absolute;
+  right: 40px;
+  top: 0;
+  padding: 12px 16px;
+  background: #d1d1cf;
+  color: #333;
+  border: none;
+  cursor: pointer;
+}
+
+/* Style the edit button hover effect */
+.edit:hover {
+  background-color: #e0a800;
+}
+
+/* Style the header */
+.header {
+  background-color: #fcc5c1;
+  padding: 30px 40px;
+  color: white;
+  text-align: center;
+}
+
+/* Clear floats after the header */
+.header:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* Style the input */
+input {
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  width: 75%;
+  padding: 10px;
+  float: left;
+  font-size: 16px;
+}
+
+/* Style the "Add" button */
+.addBtn {
+  padding: 10px;
+  width: 25%;
+  background: #d9d9d9;
+  color: #555;
+  float: left;
+  text-align: center;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+  border-radius: 0;
+}
+
+.addBtn:hover {
+  background-color: #bbb;
+}
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1>To-Do List</h1>
-        <input type="text" id="taskInput" placeholder="Enter a new task">
-        <button onclick="addTask()">Add Task</button>
-        <ul id="taskList"></ul>
-    </div>
-    <script src="script.js"></script>
+
+<div id="myDIV" class="header">
+  <h2 style="margin:5px">My To Do List</h2>
+  <input type="text" id="myInput" placeholder="Title...">
+  <span onclick="newElement()" class="addBtn">Add</span>
+</div>
+
+<ul id="myUL">
+  <li>Hit the gym</li>
+  <li class="checked">Pay bills</li>
+  <li>Meet George</li>
+  <li>Buy eggs</li>
+  <li>Read a book</li>
+  <li>Organize office</li>
+</ul>
+
+<script>
+// Function to create a "close" button and append it to a list item
+function addCloseButton(li) {
+  var span = document.createElement("SPAN");
+  var txt = document.createTextNode("\u00D7");
+  span.className = "close";
+  span.appendChild(txt);
+  li.appendChild(span);
+}
+
+// Function to create an "edit" button and append it to a list item
+function addEditButton(li) {
+  var button = document.createElement("BUTTON");
+  var txt = document.createTextNode("Edit");
+  button.className = "edit";
+  button.appendChild(txt);
+  li.appendChild(button);
+}
+
+// Function to initialize list items with close and edit buttons
+function initializeList() {
+  var myNodelist = document.getElementsByTagName("LI");
+  for (var i = 0; i < myNodelist.length; i++) {
+    addCloseButton(myNodelist[i]);
+    addEditButton(myNodelist[i]);
+  }
+}
+
+// Event delegation to handle click events on close and edit buttons
+document.addEventListener('click', function(event) {
+  if (event.target.className === 'close') {
+    var li = event.target.parentElement;
+    li.style.display = "none";
+  }
+  if (event.target.className === 'edit') {
+    var li = event.target.parentElement;
+    var currentText = li.firstChild.textContent;
+    var newText = prompt("Edit task:", currentText);
+    if (newText !== null && newText.trim() !== '') {
+      li.firstChild.textContent = newText;
+    }
+  }
+});
+
+// Event listener for list item click to toggle 'checked' class
+document.getElementById('myUL').addEventListener('click', function(ev) {
+  if (ev.target.tagName === 'LI') {
+    ev.target.classList.toggle('checked');
+  }
+}, false);
+
+// Function to create a new list item when clicking on the "Add" button
+function newElement() {
+  var li = document.createElement("li");
+  var inputValue = document.getElementById("myInput").value;
+  var t = document.createTextNode(inputValue);
+  li.appendChild(t);
+  if (inputValue === '') {
+    alert("You must write something!");
+  } else {
+    document.getElementById("myUL").appendChild(li);
+    addCloseButton(li);
+    addEditButton(li);
+  }
+  document.getElementById("myInput").value = "";
+}
+
+// Initialize the list on page load
+initializeList();
+</script>
+
 </body>
 </html>
-
